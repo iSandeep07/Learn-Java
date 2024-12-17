@@ -1,630 +1,1065 @@
-## Table of Contents
-- [Scope of Variables](#scope-of-variables)
-- [Access Modifiers and Visibility](#access-modifiers-and-visibility)
-- [Bitwise Operations](#bitwise-operations)
-  - [Width vs. Possible Values](#width-vs-possible-values)
-  - [Numerical Primitives](#numerical-primitives)
-  - [Operators](#operators)
-  - [Useful Tricks](#useful-tricks)
-- [Exceptions](#exceptions)
-- [Polymorphism](#polymorphism)
-  - [Static Polymorphism](#static-polymorphism)
-  - [Dynamic Polymorphism](#dynamic-polymorphism)
-  - [Overriding Methods](#method-overriding)
-- [Static vs Dynamic Binding](#static-vs-dynamic-binding)
-- [Interfaces](#interfaces)
-  - [Tagging Interfaces](#tagging-interfaces)
-- [Nested Classes](#nested-classes)
-- [Generics](#java-generics)
-- [Serialization](#serialization)
-- [Multithreading](#multithreading)
-  - [Thread Synchronization](#thread-synchronization)
-  - [Inter-thread Communication](#inter-thread-communication)
-- [Java Collections Framework](#java-collections-framework)
-  - [Overview](#overview)
-  - [Maps](#maps)
-  - [ArrayList vs. Vector](#arraylist-vs-vector)
-- [Common Design Patterns](#common-design-patterns)
-  - [Singleton Class](#singleton-class)
-- [`Number` Wrapper Classes](#number-wrapper-classes)
-- [Cloning Arrays](#cloning-arrays)
-- [Other Useful Keywords](#other-useful-keywords)
-  - [`final`](#final-keyword)
-  - [`abstract`](#abstract-keyword)
-  - [`synchronized`](#synchronized-keyword)
-  - [`transient`](#transient-keyword)
-  - [`throws`](#throws-keyword)
-  - [`volatile`](#volatile-keyword)
+# 100 Important Java Interview Questions
 
-<sup><sub>[▲ TOP](#table-of-contents)</sub></sup>
-## Scope of Variables
+<div>
+<p align="center">
+<a href="https://devinterview.io/questions/web-and-mobile-development/">
+<img src="https://firebasestorage.googleapis.com/v0/b/dev-stack-app.appspot.com/o/github-blog-img%2Fweb-and-mobile-development-github-img.jpg?alt=media&token=1b5eeecc-c9fb-49f5-9e03-50cf2e309555" alt="web-and-mobile-development" width="100%">
+</a>
+</p>
 
-| **Local**| **Instance** | **Class/Static**  |
-|---|---|---|
-| Declared in methods, constructors, or blocks| Declared in a class, but outside a method/block | Same as instance, but with `static` keyword |
-| Created when block is entered, destroyed upon block exit | Created when an object is created (`new`). When space is allocated for a block on the heap, a slot for each instance var is created. | Created when program starts, destroyed when program ends. |
-| No access modifiers | Access modifiers OK. Visible to all methods & constructors in class. | Access modifiers OK. Visible to all methods & constructors in class. |
-| No default values. | Have default values. | Have default values. |
+#### You can also find all 100 answers here 👉 [Devinterview.io - Java](https://devinterview.io/questions/web-and-mobile-development/java-interview-questions)
 
-<sup><sub>[▲ TOP](#table-of-contents)</sub></sup>
-## Access Modifiers and Visibility
+<br>
 
-| N/A | Public| Protected | Default | Private |
-|:---:|:---:|:---:|:---:|:---:|
-| Same Class                     | Y | Y | Y | Y |
-| Same Package Subclass          | Y | Y | Y | N |
-| Same Package Non-subclass      | Y | Y | Y | N |
-| Different Package Subclass     | Y | Y | N | N |
-| Different Package Non-subclass | Y | N | N | N |
+## 1. Explain the main idea behind _Java_ and the concept of _Write Once, Run Anywhere_.
 
-- Top-level Classes & interfaces cannot be `private` or `protected`
-- Methods declared `public` in superclass must be `public` in all subclasses
-- Methods declared `protected` in superclass must be `public` or `protected` in subclasses
-- Private methods are not inherited
+**Java** is a high-level, object-oriented programming language designed to be **platform-independent**. Its core philosophy is encapsulated in the concept of "**Write Once, Run Anywhere**" (WORA), which revolutionized software development by enabling cross-platform compatibility.
 
-<sup><sub>[▲ TOP](#table-of-contents)</sub></sup>
-## Bitwise Operations
-### Width vs. Possible Values
-The number of bits used (width) determines the numbers that can be encoded: 2^n total.
-- Unsigned: 0 through 2^n - 1
-- 2's Complement: -2^(n-1) through 2^(n-1) - 1
+### Write Once, Run Anywhere (WORA)
 
-### Numerical primitives
-- **byte:** 8 bits, e.g. from -128 to 127
-- **short:** 16 bits
-- **char:** *unsigned* 16 bits
-- **int:** 32 bits
-- **long:** 64 bits
+WORA is a principle that allows Java code to be written once and run on any device or operating system without modification. This is achieved through several key components:
 
-### Operators
+#### 1. Java Virtual Machine (JVM)
 
-For the following examples, assume a = 60, b = 13, c= -2. Their binary 2's complement representations are below.  
-a = 0011 1100  
-b = 0000 1101  
-c = 1111 1110  
+The **JVM** acts as an abstraction layer between Java code and the underlying hardware or operating system. It interprets and executes Java bytecode, ensuring consistent behavior across different platforms.
 
-| Operation | Function | Example |
-|:---:|:---:|---|
-| `&`   |AND                            | `a&b` = `0000 1100 (12)` |
-| `\|`  |OR                             | `a\|b` = `0011 1101 (61)` |
-| `^`   |XOR                            | `a^b` = `0011 0001 (49)` |
-| `~`   |Complement (bitwise inversion) | `~a` = `1100 0011 (-61 in 2's complement)` |
-| `<<`  |Left shift                     | `a << 2` = `1111 0000 (-16 in 2's complement)` |
-| `>>`  |Arithmetic shift right         | `c >> 2` = `1111 1111 (-1)` |
-| `>>>` |Logical shift right (zero-fill)| `c >>> 2` = `0111 1111 (127)` |
+#### 2. Bytecode
 
-### Useful Tricks
-- Note that in the following examples, x, 0, and 1 refer to a single bit, not a multi-bit integer
-  - **XOR**
-    - x ^ 0 = x
-    - x ^ 1 = ~x
-      - For a multi-bit integer n, n ^ -1 = ~n. This works because -1 in 2's complement is represented as 11111111..., so each bit gets XOR'd with 1
-    - x ^ x = 0
-  - **AND**
-    - x & 0 = 0
-    - x & 1 = x
-      - For a multi-bit integer n, n & -1 = n. This works because -1 in 2's complement is represented as 11111111..., so each bit gets AND'd with 1
-    - x & x = x
-  - **OR**
-    - x \| 0 = x
-    - x \| 1 = 1
-    - x \| x = x
-- Swapping two values without a temporary variable
-  ```
-  // E.g. a = 2 (0b0010), b = 5 (0b0101)
-  a = a ^ b    // a = 7 (0b0111)
-  b = a ^ b    // b = 2 (0b0010)
-  a = a ^ b    // a = 5 (0b0101)
-  ```
+Java source code is compiled into platform-independent **bytecode**, which can be executed by any JVM, regardless of the underlying system architecture.
 
-<sup><sub>[▲ TOP](#table-of-contents)</sub></sup>
-## Exceptions
-Three types:
-1. **Checked Exceptions:** Notified by the compiler at compile-time
-2. **Unchecked Exceptions:** Runtime Exceptions
-3. **Errors:** Problems that arise beyond the control of the user and programmer, e.g. stack overflow
+#### 3. Standard Library
 
-### Exception Hierarchy
-![alt text](http://cdncontribute.geeksforgeeks.org/wp-content/uploads/Exception-in-java1.png "Java Exceptions Hierarchy")
+Java provides a comprehensive **standard library** that offers cross-platform capabilities for common tasks like file handling and networking.
 
-![alt text](http://www.benchresources.net/wp-content/uploads/2017/02/exception-hierarchy-in-java.png "Java Exceptions Hierarchy")
+### How Java Achieves WORA
 
-### try-with-resources
-Automatically closes the resources used, e.g.
+1. **Platform Independence**: Java bytecode can run on any device with a compatible JVM, from smartphones to supercomputers.
+
+2. **JVM Customization**: Each operating system has a tailored JVM version, ensuring WORA functionality across diverse environments.
+
+3. **Garbage Collection**: Automatic memory management reduces the risk of memory leaks and simplifies development across platforms.
+
+4. **Security**: Java's design excludes direct memory manipulation through pointers, enhancing security across different systems.
+
+### Code Example: "Hello, World!" in Java
+
 ```java
-try (FileReader fr = new FileReader(filepath)) {
-    // use the resource
-} catch () {
-    // handle the exception
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
 }
 ```
 
-### User-defined Exceptions
-- Must be a child of `Throwable`
-- If checked exception, must extend `Exception`
-- If unchecked exception, must extend `RuntimeException`
+This simple program demonstrates Java's WORA principle. It can be compiled and run on any system with a JVM, producing the same output:
 
-<sup><sub>[▲ TOP](#table-of-contents)</sub></sup>
-## Polymorphism
-- Any object that can pass an IS-A test is polymorphic
-  - All objects are polymorphic to the `Object` class
-- Objects can **only** be accessed through reference variables
-  - A reference variable can only be of one type, and that type cannot be changed once declared. However, the reference variable can be reassigned to other objects (given that it is not `final`)
-    - The type of a reference variable determines the methods it can invoke on an object
-    - A reference variable can refer to any object of its declared type or any subtype
-    - A reference variable can be declared as a class or interface type
+1. Compile: `javac HelloWorld.java`
+2. Run: `java HelloWorld`
+3. Output: `Hello, World!`
+
+The same bytecode can be executed on Windows, Linux, macOS, or any other platform with a compatible JVM, showcasing the practical implementation of "Write Once, Run Anywhere" in Java.
+<br>
+
+## 2. What are the _main features_ of _Java_?
+
+Java's robustness makes it stand out with its powerful features.
+
+### Core Features of Java
+
+1. **Platform Independence**: Write once, run anywhere (WORA) through Java Virtual Machine (JVM).
+
+2. **Object-Oriented**: Emphasizes objects and classes, promoting `encapsulation`, `inheritance`, and `polymorphism`.
+
+3. **Strong Typing**: Variables are strongly typed, reducing ambiguity and potential for errors.
+
+4. **Security**: Offers a secure platform with features such as a `bytecode verifier` and a `security manager`.
+
+5. **Automatic Memory Management**: Centralized memory allocation and automatic `garbage collection`, reducing the risk of memory leaks.
+
+6. **Concurrency**: Supports `multi-threading`, enabling concurrent execution and efficient multitasking.
+
+7. **Architecture-Neutral**: Promotes scalability across different hardware and software configurations.
+
+8. **Dynamic**: Supports dynamic loading of classes and dynamic compilation.
+
+9. **Simplicity**: Easy-to-learn syntax and standard libraries simplify software development.
+
+10. **Portability**: Java's "compile once, run anywhere" philosophy enables it to function across diverse platforms.
+
+11. **High Performance**: Utilizes `Just-In-Time (JIT)` compilation, combining the flexibility of bytecode with the performance of machine code.
+
+### Additional Java Features
+
+#### Exception Handling
+Java provides a robust system to capture and handle runtime errors:
+
+```java
+try {
+    // Code that may throw an exception
+    int result = 10 / 0;
+} catch (ArithmeticException e) {
+    System.out.println("Cannot divide by zero");
+}
+```
+
+#### Rich Standard Library
+Java offers a comprehensive set of APIs for common tasks:
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+List<String> list = new ArrayList<>();
+list.add("Java");
+list.add("is");
+list.add("powerful");
+```
+
+#### Networking Capabilities
+Java simplifies network programming:
+
+```java
+import java.net.URL;
+import java.net.HttpURLConnection;
+
+URL url = new URL("https://api.example.com/data");
+HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+conn.setRequestMethod("GET");
+// ... handle the connection
+```
+
+#### Integration with Other Languages
+Java leverages the Java Native Interface (JNI) to support native code:
+
+```java
+public class NativeMethodExample {
+    native void nativeMethod();
+
+    static {
+        System.loadLibrary("native");
+    }
+
+    public static void main(String[] args) {
+        new NativeMethodExample().nativeMethod();
+    }
+}
+```
+
+#### Advanced Concurrency Utilities
+Java provides high-level concurrency APIs:
+
+```java
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+ExecutorService executor = Executors.newFixedThreadPool(5);
+executor.submit(() -> {
+    System.out.println("Task executed by " + Thread.currentThread().getName());
+});
+```
+
+<br>
+
+## 3. Can you list some _non-object-oriented_ features of _Java_?
+
+While Java is primarily an **object-oriented** language, it also incorporates several non-object-oriented features, allowing for multi-paradigm development:
+
+### Primitive Data Types
+
+Java supports **primitive data types** such as `int`, `boolean`, `char`, etc., which are not objects and provide simple value storage.
+
+```java
+int number = 42;
+boolean isTrue = true;
+char letter = 'A';
+```
+
+### Static Methods and Variables
+
+**Static members** belong to the class rather than instances, allowing for utility functions and shared data.
+
+```java
+public class MathUtils {
+    public static final double PI = 3.14159;
     
-Example:
-Given the following:  
-```java
-public interface Vegetarian { ... }
-public class Animal { ... }
-public class Deer extends Animal implements Vegetarian { ... }
-```
-then a Deer IS-A Animal, Vegetarian, Deer, and Object
-
-Thus the following are all legal:
-```java
-Deer d = new Deer();
-Animal a = d;
-Vegetarian v = d;
-Object o = d;
-```
-All four of these references refer to the same Deer object on the heap.
-
-### Static Polymorphism
-*Static Polymorphism* is polymorphism that is resolved at compile time. Method *overloading* is an example of static polymorphism.
-
-For example, say we have the following code:
-```java
-int add(int a, int b) {
-    return a + b;
+    public static int add(int a, int b) {
+        return a + b;
+    }
 }
-
-int add(int a, int b, int c) {
-    return a + b + c;
-}
-
-...
-
-int x = add(1, 2);    // Calls the first add method. x = 3
-int y = add(1, 2, 3); // Calls the second add method. y = 6
 ```
 
-When we make a call to the `add` function, we can tell which function will be called before even running our code, based on the type and number of our arguments. And, in fact, the compiler does just this -- it resolves which method will be called at compile time, rather than waiting until runtime.
+### Package-Level Access
 
-### Dynamic Polymorphism
-*Dynamic Polymorphism* is polymorphism that is resolved at runtime. Method *overriding* is an example of dynamic polymorphism.
+Java's **default (package-private) access modifier** limits visibility to within the same package, providing a non-OO way to control access.
 
-For example, consider the following code:
+```java
+package com.example;
+
+class PackagePrivateClass {
+    void packagePrivateMethod() {
+        // Accessible only within the same package
+    }
+}
+```
+
+### Utility Classes
+
+Java allows the creation of **utility classes** with only static methods, which don't require instantiation.
+
+```java
+public final class StringUtils {
+    private StringUtils() {} // Prevent instantiation
+    
+    public static boolean isEmpty(String str) {
+        return str == null || str.trim().isEmpty();
+    }
+}
+```
+
+### Single Inheritance
+
+Java supports **single inheritance** for classes, which can be seen as a limitation compared to full object-oriented languages that allow multiple inheritance.
+
+```java
+public class Animal {}
+public class Mammal extends Animal {} // Only one superclass allowed
+```
+
+### Procedural Programming Style
+
+Java allows for a more **procedural style** of programming within methods, especially in the `main` method.
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        int x = 5;
+        int y = 10;
+        int sum = x + y;
+        System.out.println("Sum: " + sum);
+    }
+}
+```
+
+### Interfaces
+
+While interfaces are object-oriented, Java's **functional interfaces** and **default methods** provide a way to achieve some functional programming paradigms.
+
+```java
+@FunctionalInterface
+public interface Calculator {
+    int calculate(int a, int b);
+    
+    default void printResult(int result) {
+        System.out.println("Result: " + result);
+    }
+}
+```
+<br>
+
+## 4. Describe the difference between _JDK_, _JRE_, and _JVM_.
+
+The **JVM** (Java Virtual Machine) is the cornerstone of Java's "write once, run anywhere" philosophy. It's an abstract computing machine that provides a runtime environment in which Java bytecode can be executed.
+
+#### Key Functions
+
+- **Bytecode Interpretation**: Translates Java bytecode into machine-specific instructions.
+- **Memory Management**: Handles memory allocation and deallocation, including **garbage collection**.
+- **JIT Compilation**: Compiles frequently executed bytecode to native machine code for improved performance.
+- **Exception Handling**: Manages the execution of `try-catch` blocks and handles runtime exceptions.
+- **Security**: Implements the Java security model to protect against malicious code.
+
+### JRE: Java Runtime Environment
+
+The **JRE** (Java Runtime Environment) is the minimum environment required to execute a Java application. It consists of the JVM, core libraries, and other supporting files.
+
+#### Components
+
+- **JVM**: An implementation of the JVM specification for a particular platform.
+- **Core Libraries**: Essential Java API classes (e.g., `java.lang`, `java.util`).
+- **Supporting Files**: Configuration files and resources needed for Java applications.
+
+### JDK: Java Development Kit
+
+The **JDK** (Java Development Kit) is a superset of the JRE, providing everything needed for Java application development.
+
+#### Key Components
+
+- **JRE**: Includes a complete Java Runtime Environment.
+- **Development Tools**: 
+  - `javac`: The Java compiler
+  - `java`: The Java application launcher
+  - `javadoc`: Documentation generator
+  - `jdb`: Java debugger
+- **Additional Libraries**: Extra APIs for development (e.g., `javax` packages).
+
+### Relationship and Usage
+
+- **Development**: Use the JDK to write, compile, and debug Java code.
+- **Deployment**: Use the JRE to run Java applications on end-user machines.
+- **Execution**: The JVM, part of both JRE and JDK, actually runs the Java program.
+
+### Code Example
+
+Here's a simple demonstration of how these components interact:
+
+```java
+// This file is named HelloWorld.java
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
+```
+
+To compile and run this program:
+
+1. Use the JDK's `javac` to compile:
+   ```
+   javac HelloWorld.java
+   ```
+   This creates `HelloWorld.class` containing bytecode.
+
+2. Use the JRE's `java` to run:
+   ```
+   java HelloWorld
+   ```
+   The JVM within the JRE executes the bytecode.
+<br>
+
+## 5. What is the role of the _ClassLoader_?
+
+The **ClassLoader** is a crucial component in Java's runtime environment, responsible for loading class files into memory.
+
+### Key Functions
+
+1. **Loading Classes**: Finds and reads the binary representation of a class or interface.
+
+2. **Linking Classes**:
+   - **Verification**: Ensures the loaded class adheres to Java language and JVM specifications.
+   - **Preparation**: Allocates memory for class variables and initializes them with default values.
+   - **Resolution**: Replaces symbolic references with direct references to other classes.
+
+3. **Initializing Classes**: Executes the static initializers and initializes static fields of the class.
+
+### Types of ClassLoaders
+
+1. **Bootstrap ClassLoader**: 
+   - Written in native code (C++)
+   - Loads core Java API classes from `rt.jar` or modules in Java 9+
+
+2. **Extension ClassLoader** (Platform ClassLoader in Java 9+):
+   - Loads classes from `lib/ext` directory or specified by `java.ext.dirs`
+
+3. **Application ClassLoader**:
+   - Loads user-defined classes from the classpath
+
+4. **Custom ClassLoaders**:
+   - User-defined loaders for specific loading behaviors
+
+### Delegation Hierarchy
+
+ClassLoaders follow the **delegation principle**:
+
+1. When a class is requested, the loader first delegates to its parent.
+2. If the parent can't load the class, the current loader attempts to load it.
+3. This continues up to the Bootstrap ClassLoader.
+
+### Dynamic Class Loading
+
+Java provides methods for runtime class loading:
+
+- `Class.forName(String className)`
+- `ClassLoader.loadClass(String name)`
+
+These methods enable dynamic behaviors like plugin systems.
+
+### Code Example
+
+```java
+public class ClassLoaderDemo {
+    public static void main(String[] args) throws Exception {
+        // Using Class.forName
+        Class<?> stringClass = Class.forName("java.lang.String");
+        System.out.println("Loaded: " + stringClass.getName());
+
+        // Using ClassLoader
+        ClassLoader classLoader = ClassLoaderDemo.class.getClassLoader();
+        Class<?> mathClass = classLoader.loadClass("java.lang.Math");
+        System.out.println("Loaded: " + mathClass.getName());
+
+        // Displaying ClassLoader hierarchy
+        ClassLoader current = ClassLoaderDemo.class.getClassLoader();
+        while (current != null) {
+            System.out.println(current.getClass().getName());
+            current = current.getParent();
+        }
+        System.out.println("Bootstrap ClassLoader");
+    }
+}
+```
+<br>
+
+## 6. What is the difference between a _path_ and a _classpath_ in _Java_?
+
+In Java, the **classpath** and **path** serve different purposes:
+
+### Classpath
+
+The **classpath** is a parameter that tells the Java Virtual Machine (JVM) where to find compiled Java classes (`.class` files) and packages during runtime. It's crucial for the JVM to locate and load classes when executing a Java program.
+
+#### Key aspects of classpath:
+
+- It's specific to Java runtime environment
+- Can include directories, JAR files, and ZIP archives
+- Used by the JVM to resolve class dependencies
+
+#### Setting the classpath:
+
+1. **Command-line**: Using `-cp` or `-classpath` option
+   ```bash
+   java -cp .:/path/to/some.jar MyApp
+   ```
+
+2. **Environment variable**: Setting `CLASSPATH`
+   ```bash
+   export CLASSPATH=.:/path/to/some.jar
+   ```
+
+3. **In IDEs**: Most IDEs provide GUI tools to manage classpath
+
+4. **Build tools**: Maven and Gradle manage classpath automatically
+
+### Path
+
+The **path** is a system environment variable that specifies directories where executable programs are located. It's used by the operating system to find executables when you run commands in the terminal or command prompt.
+
+#### Key aspects of path:
+
+- It's a general operating system concept, not specific to Java
+- Contains directories, not individual files
+- Used by the OS to locate executable files
+
+#### Setting the path:
+
+```bash
+export PATH=$PATH:/new/directory
+```
+
+### Comparison
+
+| Aspect | Classpath | Path |
+|--------|-----------|------|
+| Purpose | Locates Java classes | Locates executable programs |
+| Scope | Java runtime | Operating system |
+| Content | Directories, JAR files, ZIP archives | Directories only |
+| Used by | Java Virtual Machine | Operating system |
+
+### Example
+
+Consider a Java application with the following structure:
+
+```
+/MyProject
+    /src
+        /com/example
+            Main.java
+    /lib
+        external.jar
+```
+
+After compilation:
+
+```
+/MyProject
+    /bin
+        /com/example
+            Main.class
+    /lib
+        external.jar
+```
+
+To run this application:
+
+1. **Path**: Ensure Java executable is in the system path
+   ```bash
+   export PATH=$PATH:/path/to/java/bin
+   ```
+
+2. **Classpath**: Set classpath to include compiled classes and external JAR
+   ```bash
+   java -cp ./bin:./lib/external.jar com.example.Main
+   ```
+
+### Best Practices
+
+1. Use relative paths when possible for portability
+2. Leverage build tools like Maven or Gradle for dependency management
+3. Keep classpath entries minimal to avoid conflicts and improve performance
+4. Use wildcard (*) judiciously to include all JARs in a directory
+
+### Common Issues
+
+- **ClassNotFoundException**: Often due to missing classpath entries
+- **NoClassDefFoundError**: Can occur if a required class is not found at runtime
+- **Version conflicts**: When multiple versions of a class are in the classpath
+
+<br>
+
+## 7. Can you explain the difference between an _int_ and an _Integer_ in _Java_?
+
+In Java, **int** and **Integer** are two distinct data types with unique properties and use cases.
+
+### Key Distinctions
+
+#### int
+- **Primitive data type**
+- Represents whole numbers between $-2^{31}$ and $2^{31} - 1$
+- Memory allocation: Fixed $32$ bits (or $4$ bytes)
+- Instantiation: Direct, no constructor required
+- Default value: $0$
+- Performance: Generally faster due to direct value storage
+- Usage in generics: Not allowed
+
+#### Integer
+- **Wrapper class** for the primitive `int`
+- Provides additional functionality via class methods
+- Memory allocation: Variable, typically more than `int`
+- Instantiation: Through constructor, auto-boxing, or `valueOf()`
+- Default value: `null` (if not assigned)
+- Performance: Slightly slower due to object overhead
+- Usage in generics: Allowed
+
+### Code Example: int and Integer
+
+```java
+public class IntVsInteger {
+    public static void main(String[] args) {
+        int primitiveInt = 10;  // Direct assignment
+        Integer objInt = Integer.valueOf(20);  // Preferred instantiation method
+
+        // Auto-boxing (conversion from primitive to object)
+        Integer autoBoxed = primitiveInt;
+
+        // Unboxing (conversion from object to primitive)
+        int unboxed = objInt;
+
+        System.out.println("Primitive int: " + primitiveInt);
+        System.out.println("Integer object: " + objInt);
+        System.out.println("Auto-boxed Integer: " + autoBoxed);
+        System.out.println("Unboxed int: " + unboxed);
+
+        // Demonstrating default values
+        int defaultInt;
+        Integer defaultInteger;
+        System.out.println("Default int: " + (defaultInt = 0));  // Compile-time error without assignment
+        System.out.println("Default Integer: " + defaultInteger);  // Prints "null"
+
+        // Using Integer methods
+        System.out.println("Max int value: " + Integer.MAX_VALUE);
+        System.out.println("Binary representation of 20: " + Integer.toBinaryString(20));
+    }
+}
+```
+<br>
+
+## 8. What are _wrapper classes_ in _Java_?
+
+**Wrapper classes** in Java allow you to work with primitive data types as objects. They are particularly useful when working with generic collections or when using features that require objects, such as **Java Bean properties**.
+
+Wrapper classes not only provide a way to convert primitives to and from objects but also offer various utility methods specific to each primitive type.
+
+### Core Wrapper Classes
+
+| Primitive | Wrapper Class | Conversion Methods | Primitive Example | Wrapper Example |
+| --- | --- | --- | --- | --- |
+| `boolean` | `Boolean` | `.valueOf()` <br> `.parseBoolean()` <br> `.booleanValue()` | `true` | `Boolean.TRUE` |
+| `byte` | `Byte` | `.valueOf()` <br> `.parseByte()` <br> `.byteValue()` | `123` | `Byte.valueOf((byte)123)` |
+| `char` | `Character` | `.valueOf()` <br> `.charValue()` | `'a'` | `Character.valueOf('a')` |
+| `short` | `Short` | `.valueOf()` <br> `.parseShort()` <br> `.shortValue()` | `123` | `Short.valueOf((short)123)` |
+| `int` | `Integer` | `.valueOf()` <br> `.parseInt()` <br> `.intValue()` | `123` | `Integer.valueOf(123)` |
+| `long` | `Long` | `.valueOf()` <br> `.parseLong()` <br> `.longValue()` | `123L` | `Long.valueOf(123L)` |
+| `float` | `Float` | `.valueOf()` <br> `.parseFloat()` <br> `.floatValue()` | `123.45f` | `Float.valueOf(123.45f)` |
+| `double` | `Double` | `.valueOf()` <br> `.parseDouble()` <br> `.doubleValue()` | `123.45` | `Double.valueOf(123.45)` |
+
+### Use Cases for Wrapper Classes
+
+#### 1. Collections
+
+Generic collections in Java require objects, not primitives. Wrapper classes allow you to use primitives in these collections.
+
+```java
+List<Integer> numbers = new ArrayList<>();
+numbers.add(5);  // Autoboxing: int to Integer
+int num = numbers.get(0);  // Unboxing: Integer to int
+```
+
+#### 2. Nullability
+
+Wrapper classes can represent the absence of a value using `null`, which primitives cannot.
+
+```java
+Integer age = null;  // Valid
+int primitiveAge = null;  // Compilation error
+```
+
+#### 3. Java Beans
+
+In Java Beans, properties are typically represented using wrapper classes to allow for unset values.
+
+```java
+public class Customer {
+    private Integer age;  // Can be null if age is unknown
+    
+    public Integer getAge() {
+        return age;
+    }
+    
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+}
+```
+
+#### 4. Utility Methods
+
+Wrapper classes provide useful utility methods for their respective types.
+
+```java
+String binaryString = Integer.toBinaryString(42);
+int maxValue = Integer.MAX_VALUE;
+boolean isDigit = Character.isDigit('7');
+```
+<br>
+
+## 9. What does it mean that _Java_ is a _statically typed_ language?
+
+Java being a **statically typed language** means that the type of a variable is known at compile time. This characteristic requires explicit declaration of a variable's type before it can be used.
+
+### Key Characteristics of Static Typing in Java
+
+#### Type Safety
+- All data objects have a specific type
+- Types cannot change unless explicitly converted
+- Helps prevent type-related errors at runtime
+
+#### Performance Efficiency
+- Compile-time type determination allows for code optimization
+- Reduces runtime overhead associated with type checking
+
+#### Predictability
+- Known types improve code reliability and maintainability
+- Easier to reason about code behavior
+
+#### Enhanced Development Experience
+- IDEs can provide better auto-completion and error detection
+- Facilitates early identification of type-related issues
+
+#### Code Clarity
+- Explicitly defined types enhance code readability
+- Makes the intended use of variables more apparent
+
+### Example: Static Typing in Java
+
+```java
+public class StaticTypingDemo {
+    public static void main(String[] args) {
+        // Explicit type declarations
+        int number = 10;
+        String text = "Hello, Java!";
+        double decimal = 3.14;
+
+        // Type-safe operations
+        int sum = number + 5;  // Valid: int + int
+        String greeting = text + " Welcome!";  // Valid: String concatenation
+
+        // Compile-time type checking
+        // int result = number + text;  // Compilation error: incompatible types
+
+        // Type conversion (casting)
+        double convertedNumber = (double) number;  // Explicit casting from int to double
+
+        System.out.println("Sum: " + sum);
+        System.out.println("Greeting: " + greeting);
+        System.out.println("Converted number: " + convertedNumber);
+    }
+}
+```
+<br>
+
+## 10. Is _Java_ a pure _object-oriented language_? Why or why not?
+
+Java is **not** a pure object-oriented language. While it incorporates many object-oriented programming (OOP) principles, it retains some elements from procedural programming.
+
+### Object-Oriented Features in Java
+
+Java supports the four main pillars of OOP:
+
+1. **Encapsulation**: Achieved through access modifiers (`public`, `private`, `protected`).
+2. **Abstraction**: Implemented via abstract classes and interfaces.
+3. **Inheritance**: Supported using the `extends` keyword for classes and `implements` for interfaces.
+4. **Polymorphism**: Realized through method overloading and overriding.
+
+### Non-Pure OOP Elements in Java
+
+1. **Primitive Data Types**: Java includes non-object primitives like `int`, `boolean`, `char`, etc.
+
+2. **Static Members**: The `static` keyword allows for class-level fields and methods, not tied to object instances.
+
+3. **Procedural Constructs**: Java supports procedural programming elements such as control flow statements (`if`, `for`, `while`, etc.).
+
+### Code Example: Mixed OOP and Non-OOP Features
+
+```java
+public class Example {
+    private int instanceVar;  // Encapsulation: private instance variable
+    public static int staticVar = 10;  // Static variable
+
+    public void instanceMethod() {
+        // Procedural construct
+        if (instanceVar > 5) {
+            System.out.println("Greater than 5");
+        }
+    }
+
+    public static void main(String[] args) {
+        int localVar = 20;  // Primitive type
+        Example obj = new Example();
+        obj.instanceMethod();  // OOP: method invocation on object
+        System.out.println(Example.staticVar);  // Accessing static member
+    }
+}
+```
+<br>
+
+## 11. What is _bytecode_ in the context of _Java_?
+
+**Bytecode** in Java refers to the compact, platform-independent instructions generated by the Java compiler. It serves as an intermediate representation between Java source code and the Java Virtual Machine (JVM) execution environment.
+
+### Key Characteristics
+
+1. **Platform Independence**: Bytecode is designed to run on any device with a compatible JVM, embodying Java's "Write Once, Run Anywhere" philosophy.
+
+2. **Compact Format**: Bytecode instructions are typically more concise than equivalent machine code, reducing storage and transmission requirements.
+
+3. **Verification**: The JVM performs bytecode verification to ensure code safety and integrity before execution.
+
+### Execution Process
+
+1. **Compilation**: Java source code is compiled into bytecode.
+   ```java
+   javac MyProgram.java  // Produces MyProgram.class
+   ```
+
+2. **JVM Interpretation**: The JVM interprets bytecode instructions at runtime.
+   ```java
+   java MyProgram  // Executes bytecode in MyProgram.class
+   ```
+
+3. **Just-In-Time (JIT) Compilation**: For performance optimization, the JVM may compile frequently executed bytecode sections into native machine code.
+
+### Bytecode Structure
+
+Bytecode consists of one-byte opcodes followed by zero or more operands. For example:
+
+```
+iconst_1    // Push integer constant 1 onto the stack
+istore_1    // Store top of stack into local variable 1
+```
+
+### Advantages
+
+- **Portability**: Enables cross-platform execution without recompilation.
+- **Security**: Facilitates bytecode verification, enhancing runtime safety.
+- **Optimization**: Allows for runtime optimizations by the JVM.
+
+### Limitations
+
+- **Performance Overhead**: Interpretation can be slower than native code execution, though mitigated by JIT compilation.
+- **Limited Low-Level Control**: Restricts direct hardware access, which may be necessary for certain system-level operations.
+
+### Tools for Bytecode Analysis
+
+- **javap**: Java's built-in disassembler for viewing bytecode.
+  ```bash
+  javap -c MyProgram.class
+  ```
+
+- **ASM**: A bytecode manipulation and analysis framework.
+<br>
+
+## 12. How does _garbage collection_ work in _Java_?
+
+In **Java**, the **Virtual Machine** (JVM) manages memory through **automatic garbage collection** (GC). This process identifies and reclaims objects that are no longer in use.
+
+### Key Concepts
+
+- **Reachability**: Objects are considered "alive" if they are reachable from the **root object**, which can be a `Thread`, `Stack`, or `Static` reference. Unreachable objects are eligible for garbage collection.
+
+- **Reference Types**: There are different reference types that play a role in determining an object's reachability and GC eligibility.
+
+### Reference Types
+
+- **Strong References**: The most common type, created with `Object obj = new Object()`. Objects with strong references are not eligible for GC.
+
+- **Soft References**: Denoted by `SoftReference<Object> softRef = new SoftReference<>(obj)`. Soft-referenced objects are garbage-collected only if the JVM requires memory.
+
+- **Weak References**: Created with `WeakReference<Object> weakRef = new WeakReference<>(obj)`. These objects are reclaimed during the next GC cycle if they are not reachable.
+
+- **Phantom References**: **Rarely used**, these are created using `PhantomReference`, typically in conjunction with a `ReferenceQueue`. They are enqueued before being collected during the next GC cycle.
+
+- **Finalization**: The GC process can **finalize** an object before it reclaims it. This capability is associated with `finalize()` method, allowing the object to perform any necessary cleanup actions before being garbage-collected.
+
+### Code example: Different types of references
+
+Here is the Java code:
+
+```java
+import java.lang.ref.*;
+
+public class ReferenceTypes {
+    public static void main(String[] args) {
+        Object obj = new Object();  // Strong Reference
+        SoftReference<Object> softRef = new SoftReference<>(obj);  // Soft Reference
+        WeakReference<Object> weakRef = new WeakReference<>(obj);  // Weak Reference
+
+        PhantomReference<Object> phantomRef = new PhantomReference<>(obj, new ReferenceQueue<>());  // Phantom Reference
+        obj = null;  // obj is no longer a strong reference to the object, making it eligible for garbage collection
+    }
+}
+```
+
+### Interview Tips
+
+- Each reference type caters to specific memory management requirements. Understanding their use-cases is crucial for efficient resource utilization.
+
+- The `finalize()` method, while still available, is **considered obsolete**. Its use is generally discouraged due to potential performance and reliability concerns.
+
+- Familiarize yourself with more modern memory management tools, such as `java.lang.ref.Cleaner`, introduced in Java 9, for effective resource management in better ways.
+<br>
+
+## 13. What is the purpose of the _'final'_ keyword?
+
+In Java, the `final` keyword offers **restrictions and benefits**. It primarily maintains the immutability of different entities.
+
+### Core Functions
+
+- **Class Immutability**: Makes a class unextendable.
+- **Method Immutability**: Disallows method overriding.
+- **Variable Immutability**: Commands a constant value for primitives and a constant reference for objects.
+
+### Advantages
+
+- **Enhanced Security**: Avoids data tampering through unintended extensions, method modifications, or reassignments.
+- **Code Clarity**: Clarifies the intended use of class members, ensuring a reliable and coherent design.
+- **Concurrent Safety**: Guarantees thread-safe data in **situations of code shared across threads**.
+
+### Practical Applications
+
+- **Inheritance Control**: Effortlessly sets up classes that are not designed for extension. This is beneficial when aiming to preserve a rigorous design.
+- **Performance Optimization**: For primitive variables and simple data structures like Strings, using `final` eliminates the need for certain checks and operations, potentially speeding up the code execution.
+
+- **Intelligent Compilation**: Can be leveraged by Java's JIT (Just-In-Time) compiler to make certain assumptions that would otherwise necessitate costly runtime checks.
+
+### Example: `final` for Method Immutability & Variable Immutability
+
+Here is the Java code:
+
 ```java
 class Parent {
-    public void myMethod() {
-        System.out.printline("I am the parent");
+    // Prevent method overriding
+    public final void doTask() {
+        System.out.println("Parent class method");
+    }
+
+    // Prevent re-assignment of variables
+    public final String name = "John";
+
+    public final void display() {
+        System.out.println("Name: " + name);
     }
 }
 
-public class Child extends Parent {
-    public void myMethod() {
-        System.out.printline("I am the child");
+class Child extends Parent {
+    // This will cause a compilation error
+    // Trying to override a final method
+    // @Override
+    public void doTask() {
+        System.out.println("Child class method");
     }
-    
+
+    // Since 'name' is final, this code will cause a compilation error
+    // public void changeName() {
+    //     name = "Sara";
+    // }
+}
+
+public class Main {
     public static void main(String[] args) {
-        Parent p = new Child();
-        Child c = new Child();
-        p.myMethod(); // I am the child
-        c.myMethod(); // I am the child
+        Child child = new Child();
+        child.display();
+    }
+}
+```
+<br>
+
+## 14. Can we _overload_ or _override_ _static methods_ in _Java_?
+
+Garbage collection in Java is an **automatic memory management process** that identifies and removes objects that are no longer needed by the program. Here's how it works:
+
+### Garbage Collection Process
+
+1. **Marking**: The garbage collector identifies which objects are in use and which are not.
+2. **Deletion**: Unused objects are deleted.
+3. **Compaction**: After deleting unused objects, the remaining objects are moved to make the heap more compact.
+
+### Garbage Collection Algorithms
+
+Java uses different garbage collection algorithms:
+
+#### Serial Garbage Collector
+- Single-threaded collector
+- Suitable for small applications with limited memory
+
+#### Parallel Garbage Collector
+- Uses multiple threads for minor garbage collection
+- Default for most applications
+
+#### Concurrent Mark Sweep (CMS) Collector
+- Minimizes pauses by doing most of its work concurrently with the application threads
+
+#### G1 (Garbage First) Collector
+- Designed for applications with large amounts of memory
+- Divides the heap into regions for more efficient collection
+
+### Memory Allocation
+
+Java uses a **generational memory model**:
+
+1. **Young Generation**:
+   - Where new objects are allocated
+   - Further divided into Eden space and two Survivor spaces
+
+2. **Old Generation**:
+   - Long-lived objects are moved here from Young Generation
+
+3. **Permanent Generation** (Before Java 8) / **Metaspace** (Java 8+):
+   - Stores metadata about classes and methods
+
+### Example of Garbage Collection
+
+```java
+public class GCExample {
+    public static void main(String[] args) {
+        for (int i = 0; i < 1000000; i++) {
+            Object obj = new Object();
+            // obj becomes eligible for garbage collection after this loop iteration
+        }
+        System.gc(); // Suggestion to run Garbage Collector
     }
 }
 ```
 
-Here, we instantiate two Child objects, one using a Parent reference `p`, and the other using a Child reference `c`.
+### Key Points
 
-While invoking `c.myMethod()`, the compiler sees `myMethod()` in the `Child` class at compile time, and the JVM invokes `myMethod()` in the `Child` class at run time.
+- Garbage collection is **automatic** in Java
+- Objects become eligible for garbage collection when they are no longer reachable
+- The `System.gc()` method suggests running the garbage collector but doesn't guarantee immediate execution
+- Garbage collection can affect performance, especially during "stop-the-world" events
+- Different JVM implementations may use different garbage collection strategies
+<br>
 
-`myMethod()` on `p` is quite different because `p` is a Parent reference. When the compiler sees `p.myMethod()`, the compiler sees the `myMethod()` method in the `Parent` class.  Here, at compile time, the compiler used `myMethod()` in `Parent` to validate this statement. At run time, however, the JVM invokes `myMethod()` in the `Child` class.
+## 15. What is the significance of _'this'_ keyword in _Java_?
 
-This behavior is also referred to as **virtual method invocation**, and these methods are referred to as **virtual methods**. An overriding method is invoked at runtime, no matter the data type the reference is that was used in the source code at compile time.
+The `this` keyword in Java is a reference to the current instance of a class. It serves several important purposes in object-oriented programming.
 
-### Method Overriding
-Rules for *overriding* methods (**NOT** overloading!)
-- The argument list must be the same
-- The return type must be the same or a subtype of the return type declared in the overriden method
-- The access level cannot be more restrictive than the overidden method's
-- Instance methods can only be overridden if they are inherited by the subclass
-- `final` methods cannot be overriden
-- A `static` method can be redeclared, but not overridden
-- If a method cannot be inherited, it cannot be overriden
-- Constructors cannot be overriden
+### Key Uses of 'this' Keyword
 
----------------------------------
+#### 1. Distinguishing Instance Variables from Local Variables
 
-For more information, see [Static vs Dynamic Binding](#static-vs-dynamic-binding).
-
-<sup><sub>[▲ TOP](#table-of-contents)</sub></sup>
-## Static vs Dynamic Binding
-Association of a method call to a method body is known as **binding**. There are two types of binding:
-1. **Static Binding** (aka Early Binding): Binding resolved at compile time
-2. **Dynamic Binding** (aka Late Binding): Binding resolved at run time
-
-In Java, static binding is used for the binding of `static`, `private`, and `final` methods. This is because these methods cannot be overridden, and thus calls to such methods are necessarily unambiguous. The type of the class these methods belong to can be determined at compile time.
-
-This is important to know, for example, in situations where you might call a `static` method via an object (all though this is generally ill-advised), like in the example below.
+When a method or constructor parameter has the same name as an instance variable, `this` helps to differentiate between them:
 
 ```java
-class Human {
-   public static void walk() {
-       System.out.println("Human walks");
-   }
-}
-class Boy extends Human {
-   public static void walk(){
-       System.out.println("Boy walks");
-   }
-   
-   public static void main(String args[]) {
-       Human b = new Boy();    // Reference is type Human, object is type Boy
-       Human h = new Human();  // Reference is type Human, object is type Human
-       b.walk();  // Human walks
-       h.walk();  // Human walks
-   }
-}
-```
+public class Person {
+    private String name;
 
-On the other hand, dynamic binding is used when the compiler is not able to resolve the binding at compile time:
-
-```java
-class Human {
-   public void walk() {
-       System.out.println("Human walks");
-   }
-}
-class Boy extends Human {
-   public void walk(){
-       System.out.println("Boy walks");
-   }
-   
-   public static void main(String args[]) {
-       Human b = new Boy();    // Reference is type Human, object is type Boy
-       Human h = new Human();  // Reference is type Human, object is type Human
-       b.walk();  // Boy walks
-       h.walk();  // Human walks
-   }
-}
-```
-
-Note that, as detailed in the [Polymorphism](#polymorphism) section, the binding of *overloaded* methods is static, while the binding of *overridden* methods is dynamic.
-
-<sup><sub>[▲ TOP](#table-of-contents)</sub></sup>
-## Interfaces
-An interface may have abstract methods, default methods, static methods, constants, and nested types. Method bodies exist only for default and static methods.
-
-An interface contains behaviors that a class implements. All methods of an interface must be defined in the implementing class, unless the class itself is abstract.
-
-Interfaces are **similar** to classes in that:
-- They can contain any number of methods
-- Saved as InterfaceName.java
-
-Interfaces are **different** from classes in that:
-- Interfaces cannot be instantiated
-- Interfaces don't have constructors
-- All interface methods are *implicitly* abstract
-- An interface cannot have instance fields; only `static final` fields (constants)
-- An interface can extend multiple interfaces (classes can implement multiple interfaces - but they *cannot* extend multiple classes)
-
-Interfaces and their methods are implicitly `abstract`. Their methods are implicitly `public`.
-
-### Tagging Interfaces
-The most common use of extending interfaces occurs when the parent interface doesn't have any methods.
-Example:
-The MouseListener interface in `java.awt.event` extends `java.util.EventListener`, which is defined as follows:  
-```java
-package java.util;
-public interface EventListener {}
-```
-Thus, an interface with no methods is a **tagging interface**.  
-These have two basic design purposes:  
-1. Creates a common parent
-2. Adds a data type to a class. A class that implements a tagging interface becomes an interface type through polymorphism
-
-<sup><sub>[▲ TOP](#table-of-contents)</sub></sup>
-## Nested Classes
-Types of nested classes:
-```
-                                Nested classes
-                                      |
-                   ___________________|__________________
-                  |                                      |
-            Inner classes                      Static nested classes
-    ______________|_________________
-   |              |                 |
- Inner      Method-local        Anonymous
-classes     inner classes     inner classes
-```
-
-**Java does NOT support multiple inheritance.**  
-This means a class cannot inherit multiple classes.  
-However, a class **can** implement multiple interfaces.
-
-<sup><sub>[▲ TOP](#table-of-contents)</sub></sup>
-## Java Generics
-```java
-public static <E> void printArray(E[] array) {
-    for (E element : array)
-        System.out.print(element + " ");
-}
-...
-// Example usage:
-Integer[] intArr = {1, 2, 3};
-Double[] doubleArr = {1.1, 2.2, 3.3};
-
-printArray(intArr);
-printArray(doubleArr);
-```
-
-You can also bound the type of the Generic parameters, e.g.  
-```java
-public static <T extends Comparable<T>> T max(T x, T y) { ... }
-```
-
-Can be applied to Generic classes as well, e.g.  
-```java
-public class Box<T> {
-    private T t;
-    ....
- }
- ```
-
-<sup><sub>[▲ TOP](#table-of-contents)</sub></sup>
-## Serialization
-Serialization allows an object to be represented as a sequence of bytes that includes the object's data as well as info about the object's type and the types of data stored in the object.
-
-After a serialized object has been written to a file, it can be read from the file and deserialized to recreate the object in memory.
-
-For a class to be serialized, it must meet two conditions:
-1. It must implement the `java.io.Serializable` interface
-2. All of the fields must be serializable. If a field is not serializable, it must be marked with the `transient` keyword
-
-Example of serialization:
-```java
-try {
-    FileOutputStream fileOut = new FileOutputStream("/tmp/employee.ser");
-    ObjectOutputStream out = new ObjectOutputStream(fileOut);
-    out.writeObject(e); // Assume e is an Employee object
-    out.close();
-    fileOut.close();
-}
-```
-The data for object `e` is now saved in `/tmp/employee.ser`.  
-Note: convention is to use `.ser` (?)
-
-Example of deserialization:
-```java
-Employee e = null;
-try {
-    FileInputStream fileIn = new FileInputStream("/tmp/employee.ser");
-    ObjectInputStream in = new ObjectInputStream(fileIn);
-    e = (Employee)in.readObject();
-    in.close();
-    fileIn.close();
-}
-```
-The return value of `readObject()` should be cast to the proper class.
-
-<sup><sub>[▲ TOP](#table-of-contents)</sub></sup>
-## Multithreading
-Lifecycle of a thread:
-- **New:** a new thread begins in this state where it remains until the program starts the thread
-- **Runnable:** executing its task
-- **Waiting:** waiting for another thread to finish a task
-- **Timed Waiting:** waiting for a certain amount of time
-- **Terminated:** dead
-
-Thread priorities range from `MIN_PRIORITY` (a constant of 1) to `MAX_PRIORITY` (a constant of 10).
-
-There are two ways of creating a thread:
-1. Implement the `Runnable` interface
-  - If you want a class to be executed as a thread, it must implement `Runnable`. This method takes three basic steps:
-    1. Implement a `run()` method
-    2. Instantiate a `Thread` object, like so: `Thread (Runnable threadObj, String threadName)`, where threadObj is an instance of a class that implements `Runnable`, and threadName is the name given to the new thread
-    3. Start a Thread object with `start()`, which executes a class to the class's `run()` method
-2. Extend the `Thread` class
-  - This approach provides more flexibility in handling multiple threads created using available methods in the `Thread` class.
-    1. Override the `run()` method in `Thread` class
-    2. After creating the `Thread` object, start it with the `start()` method
-    
-### Thread Synchronization
-What if two threads try to access the same resources? For example, if multiple threads try to write to the same file at the same time, they could corrupt the file.
-
-**Monitors** allow us to make sure only one thread can access a shared resource at a time. Each object in Java has a monitor associated with it, which a thread can lock or unlock. Only one thread at a time may hold a lock on a monitor.
-
-Use a `synchronized` block to contain shared data.
-
-### Inter-thread Communication
-Threads can be built to exchange information using three simple methods:
-  1. `public void wait()` -- causes the current thread to wait until another thread invokes `notify()`
-  2. `public void notify()` -- wakes up a single thread that is waiting on the object's monitor
-  3. `public void notifyAll()` -- wakes up all threads that called `wait()` on the same object
-  
-All three methods can **only** be called from within a `synchronized` context.
-
-#### Thread Deadlock
-Situation where two or more threads are blocked forever, waiting for each other. Occurs when multiple threads need the same locks, but obtain them in a different order. Obviously, we want to **avoid this!**
-
-<sup><sub>[▲ TOP](#table-of-contents)</sub></sup>
-## Java Collections Framework
-### Overview
-![alt text](https://media.geeksforgeeks.org/wp-content/uploads/java-collection.jpg "Java Collections Framework")
-
-### Maps
-There are four commonly used map implementations in Java: HashMap, TreeMap, LinkedHashMap, and Hashtable.
-
-![alt text](https://www.programcreek.com/wp-content/uploads/2009/02/MapClassHierarchy-600x354.jpg "Map Overview")
-
-To summarize them:
-- **HashMap** makes no guarantees on the ordering of keys or values.
-- **TreeMap** will iterate according to the "natural ordering" of the keys according to their `compareTo()` method (or an externally supplied `Comparator`). Additionally, it implements the `SortedMap` interface, which contains methods that depend on this sort order. It is implemented via a red-black tree.
-- **LinkedHashMap** is a subclass of HashMap with a linked-list implementation. It will iterate in the order in which the entries were put into the map.
-- **Hashtable** is an obsolete class from the days of Java 1.1 before the collections framework existed. It should not be used anymore, because its API is cluttered with obsolete methods that duplicate functionality, and its methods are synchronized (which can decrease performance and is generally useless). Furthermore, in a `Hashtable`, neither the key nor value can be `null`. This is not the case with `HashMap`, which may have a single `null` key and multiple `null` values.
-  - Use [ConcurrentHashMap](https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ConcurrentHashMap.html) instead of `Hashtable` when synchronization is needed.
-
-The figure below summaries many of these differences.
-```
-╔══════════════╦═════════════════════╦═══════════════════╦═════════════════════╗
-║   Property   ║       HashMap       ║      TreeMap      ║     LinkedHashMap   ║
-╠══════════════╬═════════════════════╬═══════════════════╬═════════════════════╣
-║ Iteration    ║  no guarantee order ║ sorted according  ║                     ║
-║   Order      ║ will remain constant║ to the natural    ║    insertion-order  ║
-║              ║      over time      ║    ordering       ║                     ║
-╠══════════════╬═════════════════════╬═══════════════════╬═════════════════════╣
-║  Get/put     ║                     ║                   ║                     ║
-║   remove     ║         O(1)        ║      O(log(n))    ║         O(1)        ║
-║ containsKey  ║                     ║                   ║                     ║
-╠══════════════╬═════════════════════╬═══════════════════╬═════════════════════╣
-║              ║                     ║   NavigableMap    ║                     ║
-║  Interfaces  ║         Map         ║       Map         ║         Map         ║
-║              ║                     ║    SortedMap      ║                     ║
-╠══════════════╬═════════════════════╬═══════════════════╬═════════════════════╣
-║              ║                     ║                   ║                     ║
-║     Null     ║       allowed       ║    only values    ║       allowed       ║
-║ values/keys  ║                     ║                   ║                     ║
-╠══════════════╬═════════════════════╩═══════════════════╩═════════════════════╣
-║              ║   Fail-fast behavior of an iterator cannot be guaranteed      ║
-║   Fail-fast  ║ impossible to make any hard guarantees in the presence of     ║
-║   behavior   ║           unsynchronized concurrent modification              ║
-╠══════════════╬═════════════════════╦═══════════════════╦═════════════════════╣
-║              ║                     ║                   ║                     ║
-║Implementation║      buckets        ║   Red-Black Tree  ║    double-linked    ║
-║              ║                     ║                   ║       buckets       ║
-╠══════════════╬═════════════════════╩═══════════════════╩═════════════════════╣
-║      Is      ║                                                               ║
-║ synchronized ║              implementation is not synchronized               ║
-╚══════════════╩═══════════════════════════════════════════════════════════════╝
-```
-
-### ArrayList vs. Vector
-1. **Synchronization:** `Vector` is **synchronized**, which means only one thread can access it at a time, while `ArrayList` is not synchronized, which means multiple threads could read it at the same time.
-2. **Performance:** `ArrayList` is faster, as `Vector` incurs slight overhead in acquiring the lock.
-3. **Growth:** `Vector` and `ArrayList` both grow and shrink dynamically, but `ArrayList` increments **50%** of the current array size if the number of elements exceeds its capacity, while `Vector` increments **100%**.
-4. **Traversal:** `Vector` can use both `Enumeration` and `Iterator` for traversing elements, while `ArrayList` can only use `Iterator`.
-
-Generally, you'll want to use an `ArrayList`; in the single-threaded case it's a better choice, and in the multi-threaded case, you get better control over locking. Want to allow concurrent reads? Fine. Want to perform one synchronization for a batch of ten writes? Also fine. It does require a little more care on your end, but it's likely what you want. Also note that if you have an `ArrayList`, you can use the [`Collections.synchronizedList`](https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html#synchronizedList-java.util.List-) function to create a synchronized list, thus getting you the equivalent of a `Vector`.
-
-<sup><sub>[▲ TOP](#table-of-contents)</sub></sup>
-## Common Design Patterns
-### Singleton Class
-Controls object creation, limiting # of objects to only one. Since there is only one instance, instance fields will occur once per class, similar to static fields.  
-Singletons often control access to resources like database connections or sockets.  
-```java
-public class Singleton {
-    private static Singleton singleton = new Singleton();
-    private Singleton () {} // private constructor prevents any other class from instantiating
-    
-    public static Singleton getInstance() { return singleton; }
-    protected static void demoMethod() { System.out.println("demo"); }
-}
-```
-
-Example usage:
-```java
-Singleton tmp = Singleton.getInstance();
-tmp.demoMethod();
-```
-
-Some useful posts on the variations of the Singleton pattern in Java:
-- [Singletons in Java - Baeldung](https://www.baeldung.com/java-singleton)
-- [Double-Checked Locking with Singleton](https://www.baeldung.com/java-singleton-double-checked-locking)
-- [Java Singleton Design Pattern Best Practices with Examples](https://www.journaldev.com/1377/java-singleton-design-pattern-best-practices-examples)
-
-<sup><sub>[▲ TOP](#table-of-contents)</sub></sup>
-## `Number` Wrapper Classes
-```
-                   Number
-                     |
-  ___________________|_________________
- |       |       |       |      |      |
-Byte  Integer  Double  Short  Float  Long
-```
-
-Converting primitive data types into objects is called **boxing**.  
-Similarly, the reverse operation is called **unboxing**.
-
-<sup><sub>[▲ TOP](#table-of-contents)</sub></sup>
-## Cloning Arrays
-Two methods of copying an array are using `System.arraycopy()` and `clone()`.  
-An example of `System.arraycopy()`:
-```java
-int[] dest = new int[orig.length];
-System.arraycopy(orig, 0, dest, 0, orig.length);
-```
-
-An example of `clone()`:
-```java
-int[] dest = orig.clone();
-```
-
-Long story short, it seems the first method may be quicker on shorter arrays, but on larger datasets they have similar performance. Furthermore, `clone()` is much more compact and easy to read. Thus, tend to prefer `clone()`.
-
-For more information, see [this article](https://www.javaspecialists.eu/archive/Issue124.html).
-
-<sup><sub>[▲ TOP](#table-of-contents)</sub></sup>
-## Other Useful Keywords
-### `final` Keyword
-Can be applied to variables, methods, and classes.
-#### Variables
-- Can be initialized only once
-- A reference variable declared `final` can never be reassigned to refer to a different object. However, the data within the object can be changed (unless it is also `final`). In other words, the state of the object can be changed, but not the reference.
-
-#### Methods
-- Cannot be overriden by subclasses
-
-#### Classes
-- Cannot be subclassed. Thus, no features can be inherited.
-
-### `abstract` Keyword
-Can be applied to both methods and classes.
-#### Methods
-- Have no implementation. Implementation is provided by subclass.
-- Can never be `final` or `strict`
-- Any class that extends an `abstract` class must implement **all** of its `abstract` methods, unless the subclass is also `abstract`
-
-#### Classes
-- Can never be instantiated
-- Cannot be both `abstract` and `final` (there is an obvious conflict of purpose between those two keywords)
-- If a class contains `abstract` methods, the class **must** be declared as `abstract`
-- An `abstract` class may have `abstract` as well as other methods
-- An `abstract` class doesn't have to have `abstract` methods.
-
-### `synchronized` Keyword
-Indicates a block of code that can only be executed by one thread at a time. Can be applied to methods or independent blocks.
-
-A synchronized block can specify an object to use as a lock. This object is referred to as a "monitor" object.
-
-See [this post](http://tutorials.jenkov.com/java-concurrency/synchronized.html) or the [accompanying video](https://youtu.be/eKWjfZ-TUdo) for more information.
-
-### `transient` Keyword
-An instance variable marked as `transient` tells the JVM to skip that variable when serializing the object containing it
-
-### `throws` Keyword
-Used to postpone the handling of a checked (compile-time) exception.
-E.g.
-```java
-import java.io.*;
-public class MyClass {
-    public void deposit(double amount) throws RemoteException {
-        // Method implementation ...
-        throw new RemoteException();
+    public Person(String name) {
+        this.name = name; // 'this.name' refers to the instance variable
     }
-    ...
 }
 ```
 
-### `volatile` Keyword
-Tells the JVM that a thread accessing the variable must merge its own private copy of the variable with the master copy in memory. In technical terms, any variable marked as volatile will only ever be read from & written to main memory, bypassing any CPU caching.
+#### 2. Invoking Current Class Methods
 
-If a variable is not declared `volatile`, we have no guarantee about when exactly the master copy will be accessed or modified. This can subtly cause problems in multithreaded applications that may be difficult to debug. 
+`this` can be used to call other methods within the same class:
 
-`volatile` can only be used on instance variables.
+```java
+public class Calculator {
+    public void multiply(int a, int b) {
+        int result = a * b;
+        this.display(result);
+    }
 
-See [this fantastic post](http://tutorials.jenkov.com/java-concurrency/volatile.html) or the [accompanying video](https://www.youtube.com/watch?v=nhYIEqt-jvY&ab_channel=JakobJenkov) for more information.
+    private void display(int value) {
+        System.out.println("Result: " + value);
+    }
+}
+```
+
+#### 3. Passing Current Object as Parameter
+
+`this` can be passed as an argument in method calls when an object needs to pass a reference to itself:
+
+```java
+public class Employee {
+    public void updateRecord(Database db) {
+        db.update(this); // Passing the current Employee object
+    }
+}
+```
+
+#### 4. Constructor Chaining
+
+`this()` can be used to call another constructor in the same class:
+
+```java
+public class Rectangle {
+    private int width, height;
+
+    public Rectangle() {
+        this(1, 1); // Calls the two-parameter constructor
+    }
+
+    public Rectangle(int width, int height) {
+        this.width = width;
+        this.height = height;
+    }
+}
+```
+
+#### 5. Returning Current Class Instance
+
+`this` can be returned to allow method chaining:
+
+```java
+public class StringBuilder {
+    private String str = "";
+
+    public StringBuilder append(String s) {
+        str += s;
+        return this; // Allows chaining like: new StringBuilder().append("A").append("B")
+    }
+}
+```
+<br>
+
+
+
+#### Explore all 100 answers here 👉 [Devinterview.io - Java](https://devinterview.io/questions/web-and-mobile-development/java-interview-questions)
+
+<br>
+
+<a href="https://devinterview.io/questions/web-and-mobile-development/">
+<img src="https://firebasestorage.googleapis.com/v0/b/dev-stack-app.appspot.com/o/github-blog-img%2Fweb-and-mobile-development-github-img.jpg?alt=media&token=1b5eeecc-c9fb-49f5-9e03-50cf2e309555" alt="web-and-mobile-development" width="100%">
+</a>
+</p>
 
